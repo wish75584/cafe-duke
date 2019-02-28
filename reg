@@ -1,0 +1,140 @@
+ EditText name,address,email,age;
+    Button btn;
+    String names,addresss,emails,ages;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_form);
+
+        name  =  findViewById(R.id.name);
+        address  =  findViewById(R.id.address);
+        email  =  findViewById(R.id.email);
+        age  =  findViewById(R.id.age);
+
+        btn=findViewById(R.id.btn);
+        btn.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+
+        if(v==btn)
+        {
+            saveData();//saves data
+        }
+    }
+
+    void saveData(){
+        try {
+
+            //progresss bar which appears when data sent to server it appears till the process get completed
+            final ProgressDialog progress = new ProgressDialog(this);
+            progress.setTitle("Loading");
+            progress.setMessage("Please wait ...");
+            progress.setCancelable(false);//when we click side at side of progress bar it will not get
+            //canceled till the process get completed
+
+            names = name.getText().toString().trim();
+            addresss = address.getText().toString().trim();
+            emails = email.getText().toString().trim();
+            ages = age.getText().toString().trim();
+
+
+            if(names.length()==0){
+                Toast.makeText(this,"Please Enter Your First Name",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(addresss.length()==0){
+                Toast.makeText(this,"Please Enter Address",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(emails.length()==0){
+                Toast.makeText(this,"Please Enter Your Email",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if(ages.length()==0){
+                Toast.makeText(this,"Please Enter Your age",Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Log.e("names",names);
+            Log.e("addresss",addresss);
+            Log.e("emails",emails);
+            Log.e("ages",ages);
+
+
+            progress.show();
+            String url = Config.command;
+
+            Log.e("url", url);
+
+            //its a queue of requests
+            //volley is library in which all methods are defined
+            //volley is implemented in gradle
+            //olley is an HTTP library that makes networking for Android apps easier and most importantly, faster.
+            RequestQueue queue = Volley.newRequestQueue(this);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.POST,
+                            url, new Response.Listener<String>() {
+                        @Override
+                public void onResponse(String response) {
+                    Log.e("response ", "response : " + response.toString());
+
+                    progress.dismiss();
+
+                    try {
+                        JSONObject jObj = new JSONObject(response);
+
+                        String result = jObj.getString("result");
+
+                        if (result.equals("true")) {
+
+                            Toast.makeText(FormActivity.this,"Data save successfully....",Toast.LENGTH_SHORT).show();
+                            name.setText("");
+                            address.setText("");
+                            email.setText("");
+                            age.setText("");
+                        }
+
+                    } catch (JSONException e) {
+                        // JSON error
+                        e.printStackTrace();
+                        Log.e("Json Exception", "Json Exception : " + e.toString());
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("Error", "Error : " + error.toString());
+                    progress.dismiss();
+                }
+            }){
+                @Override
+                protected Map<String, String> getParams()
+                {
+
+                    Map<String, String>  params = new HashMap<String, String>();
+
+                    params.put("fname", names);
+                    params.put("fcontact", "4444444444");
+                    params.put("faddress", addresss);
+                    params.put("femail", emails);
+                    params.put("fage", ages);
+
+                    Log.e("names", names);
+                    Log.e("addresss", addresss);
+                    Log.e("emails", emails);
+                    Log.e("ages", ages);
+
+                    return params;
+                }
+            };
+            queue.add(stringRequest);
+        } catch (Exception e) {
+            Log.e("error", e.toString());
+        }
+    }
