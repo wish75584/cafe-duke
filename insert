@@ -1,0 +1,21 @@
+<?php
+
+$host = "localhost"	;
+		$username ="root";
+		$password = "";
+		$db ="volley";
+
+ 	$username = $_POST['username']; 
+    $password = ($_POST['password']);  
+    $email = $_POST['email'];   
+    $gender = $_POST['gender']; 
+
+$conn = mysqli_connect($host,$username,$password,$db);
+$sql = "Insert into data (username,password,email,gender)VALUES ('$username','$password','$email','$gender')";
+
+if (mysqli_query($sql(query)->$conn)) {
+    echo "New record created successfully";
+} else {
+    echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+}
+?>
