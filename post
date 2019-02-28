@@ -1,0 +1,28 @@
+<?php 
+		$host = "localhost"	;
+		$username ="root";
+		$password = "";
+		$db ="volley";
+
+$conn = mysqli_connect($host,$username,$password,$db);
+
+$uname = $_POST["name"];
+$pass = $_POST["pas"];
+$email = $_POST["mail"];
+$gender = $_POST["gender"];
+
+
+
+$sql = "INSERT INTO `data` (`username`, `password`, `email`, `gender`) VALUES (NULL, '$uname', '$pass', '$email', '$gender')";
+
+
+
+/*$result = mysqli_query($conn,$sql);
+
+if(mysqli_num_rows($result)	> 0 ){
+	
+	$row = mysqli_fetch_assoc($result);
+	echo json_encode(array("Name"=>$row["username"],"password"=>$row["password"],"email"=>$row["email"],"gender"=>$row["gender"]));
+	}*/
+
+?>
