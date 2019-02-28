@@ -1,0 +1,89 @@
+ ListView  list;
+
+    ArrayList<ListItem> list_item;
+    ListAdapter list_adpter;
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_list_view);
+
+        list = findViewById(R.id.list);
+
+        list_item=new ArrayList<ListItem>();
+        list_adpter=new ListAdapter(ListDisplay.this,list_item);
+        list.setAdapter(list_adpter);
+
+        getData();
+
+    }
+
+
+    void getData(){
+        try {
+
+            final ProgressDialog progress = new ProgressDialog(this);
+            progress.setTitle("Loading");
+            progress.setMessage("Please wait ...");
+            progress.setCancelable(false);
+
+
+            progress.show();
+            String url = Config.geturl;
+
+            Log.e("url", url);
+
+            RequestQueue queue = Volley.newRequestQueue(this);
+
+            StringRequest stringRequest = new StringRequest(Request.Method.GET,
+                    url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.e("response ", "response : " + response.toString());
+
+                    progress.dismiss();
+
+                    try {
+                        JSONObject jObj = new JSONObject(response);
+
+                        JSONArray regs=jObj.getJSONArray("regs");
+
+                        for(int i=0;i<regs.length();i++)
+                        {
+                            JSONObject data=regs.getJSONObject(i);
+
+                            String id= data.getString("id");
+                            String name= data.getString("name");
+                            String addr= data.getString("addr");
+                            String contact= data.getString("contact");
+                            String email= data.getString("email");
+                            String age= data.getString("age");
+
+                            ListItem list_item=new ListItem(id,name,addr,contact,email,age);
+                            list_adpter.add(list_item);
+                        }
+
+
+
+
+
+                    } catch (JSONException e) {
+                        // JSON error
+                        e.printStackTrace();
+                        Log.e("Json Exception", "Json Exception : " + e.toString());
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("Error", "Error : " + error.toString());
+                    progress.dismiss();
+                }
+            });
+            queue.add(stringRequest);
+        } catch (Exception e) {
+            Log.e("error", e.toString());
+        }
+    }
+}
